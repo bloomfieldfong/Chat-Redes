@@ -5,6 +5,7 @@ import sleekxmpp
 from optparse import OptionParser
 from sleekxmpp.exceptions import IqError, IqTimeout
 from opciones import*
+from sleekxmpp.stanza import Message, Presence, Iq, StreamError
    
 
 class EchoBot(sleekxmpp.ClientXMPP):
@@ -18,12 +19,14 @@ class EchoBot(sleekxmpp.ClientXMPP):
             self.add_event_handler("session_start", self.start)
         elif(opcion == '2'):
             self.add_event_handler("register", self.register)
+            self.add_event_handler("session_start", self.start)
         
         self.add_event_handler("message", self.message)
 
+
     #Procesa el evento session_start
     def start(self, event):
-        print('Session start')
+        print('Conectado')
         self.send_presence()
         self.get_roster()
         
@@ -31,9 +34,31 @@ class EchoBot(sleekxmpp.ClientXMPP):
     #Procesa los mensajes entrantes 
     def message(self, msg):
         if msg['type'] in ('chat', 'normal'):
-            msg.reply("Se envio\n%(body)s" % msg).send()
-            print(msg)
-    
+            print('---------------------------------------------------------------------------')
+            print('From:' )
+            print(msg['from'])
+            print('---------------------------------------------------------------------------')
+            print(msg['subject'])
+            print(msg['body'])
+            print('---------------------------------------------------------------------------')
+            
+
+    def register(self, iq):
+        resp = self.Iq()
+        resp['type'] = 'set'
+        resp['register']['username'] = self.boundjid.user
+        resp['register']['password'] = self.password
+
+        try:
+            resp.send(now=True)
+            logging.info("Se creo la cuenta: %s!" % self.boundjid)
+        except IqError as e:
+            logging.error("No se pudo registrar la cuenta %s" %
+                    e.iq['error']['text'])
+            self.disconnect()
+        except IqTimeout:
+            logging.error("No hubo respuesta del servidor")
+            self.disconnect()
 
 if __name__ == '__main__':
 
@@ -94,7 +119,8 @@ if __name__ == '__main__':
             #Nos da los contactos que tenemos que estan en linea
             if(menu_opcion == '1'):
                 print("\nContacts:")
-                print(xmpp.client_roster)
+                y = xmpp.client_roster
+                print(y.keys()) 
                 print("")
 
             ##Mensaje a un usuario 
@@ -109,43 +135,46 @@ if __name__ == '__main__':
             elif(menu_opcion == '3'):
                 user = input("Ingrese el nombre del usuario que desea agregar: \n")
                 xmpp.send_presence(pto = user, ptype ='subscribe')
-
+                
             ##Mensaje grupal
             elif(menu_opcion == '4'):
-                print("Contacts:")
-                print(xmpp.client_roster+'\n')
-
+                print("")
+                
+           
             ##Desconectarme
             elif(menu_opcion == '5'):
-                print("Contacts:")
-                print(xmpp.client_roster+'\n')
+                print('Desconectandose')
+                xmpp.disconnect()
+        
+                break
 
             ##Mostrar detalles de contacto 
             elif(menu_opcion == '6'):
-                print("Contacts:")
-                print(xmpp.client_roster+'\n')
+                x = input("Ingrese el contacto que desea buscar:")
+                y = xmpp.client_roster
+                print(type(y[key_values]))
+                
 
             ##Definir nuestro mensaje de preferencia
             elif(menu_opcion == '7'):
 
-                x = input("Que mensaje e gustaria mostrar?")
-                y = input("Cual es su mensaje de preferencia?")
-                xmpp.makePresence(pfrom = xmpp.jid, pstatus =x, pshow = y)
+                x = input("Que mensaje e gustaria mostrar?: ")
+                y = input("Cual es su mensaje de preferencia?: ")
+                xmpp.makePresence(pfrom = xmpp.jid, pstatus = x, pshow = y)
+                 
             
             ##Eliminar mi cuenta
             elif(menu_opcion == '8'):
                 yes = input("Esta seguro de que quiere eliminar su cuenta? (si/no)")
 
-                if(yes == 'si')
-                    xmpp.remove_user()
-                    xmpp.disconect()
-                    break
+                if(yes == 'si'):
+                    xmpp.update_roster('michisss@alumchat.xyz', subscription='remove')
+
                 else:
                     menu()
                     print("")
             ##regresar al menu principal    
             elif(menu_opcion == '0'):   
-                menu()
                 print("")
     else:
         print("Unable to connect.")

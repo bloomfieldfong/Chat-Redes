@@ -6,7 +6,9 @@ def menu():
     print('3: Agregar usuario')
     print('4: Mensaje grupal')
     print('5: Desconectarme')
-    print('6: Eliminar mi cuenta')
+    print('6: Detalles de otros contactos')
+    print('7: Definir mensaje de preferencia')
+    print('8: Eliminar mi cuenta')
 
 
 
