@@ -9,6 +9,7 @@ def menu():
     print('6: Detalles de otros contactos')
     print('7: Definir mensaje de preferencia')
     print('8: Eliminar mi cuenta')
+    print('9: Enviar archivos')
 
 
 

@@ -23,6 +23,12 @@ class EchoBot(sleekxmpp.ClientXMPP):
         
         self.add_event_handler("message", self.message)
 
+        self.register_plugin('xep_0047', {
+            'auto_accept': True
+        })
+
+        self.add_event_handler("ibb_stream_start", self.stream_opened, threaded=True)
+        self.add_event_handler("ibb_stream_data", self.stream_data)
 
     #Procesa el evento session_start
     def start(self, event):
@@ -30,7 +36,18 @@ class EchoBot(sleekxmpp.ClientXMPP):
         self.send_presence()
         self.get_roster()
 
-      
+    def accept_stream(self, iq):
+        return True
+
+
+    def stream_opened(self, stream):
+        print('Stream opened: %s from %s' % (stream.sid, stream.peer_jid))
+
+
+    def stream_data(self, event):
+        print(event['data'])
+
+
 
     #Procesa los mensajes entrantes 
     def message(self, msg):
@@ -43,7 +60,7 @@ class EchoBot(sleekxmpp.ClientXMPP):
             print(msg['body'])
             print('------------------------------------------------------------------------------------------')
 
-    def delete_account(self):
+    def delete(self):
         resp = self.Iq()
         resp['type'] = 'set'
         resp['from'] = self.boundjid.user
@@ -61,6 +78,15 @@ class EchoBot(sleekxmpp.ClientXMPP):
             logging.error("No response from server.")
             self.disconnect()
 
+
+    def send_file(self, filename, receiver):
+        stream = self['xep_0047'].open_stream(receiver)
+
+        with open(filename) as f:
+            data = f.read()
+            stream.sendall(data)
+
+        
     def register(self, iq):
         resp = self.Iq()
         resp['type'] = 'set'
@@ -157,6 +183,9 @@ if __name__ == '__main__':
             ##Mensaje grupal
             elif(menu_opcion == '4'):
                 print("")
+                mensaje = input("Ingrese el mensaje que quiere enviar")
+
+                
                 
            
             ##Desconectarme
@@ -188,7 +217,8 @@ if __name__ == '__main__':
 
                 if(yes == 'si'):
                     print("removing")
-                    xmpp.delete_account()
+                    xmpp.delete()
+                    xmpp.disconnect()
 
                 else:
                     menu()
@@ -196,6 +226,12 @@ if __name__ == '__main__':
             ##regresar al menu principal    
             elif(menu_opcion == '0'):   
                 print("")
+
+            elif(menu_opcion =='9'):
+                persona = input("Ingrese el usuario a quien le quiere enviar el archivo: ")
+                file = input("Ingrese el nombre del file: ")
+                xmpp.send_file(file, persona)
+                
     else:
         print("Unable to connect.")
 
