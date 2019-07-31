@@ -29,7 +29,8 @@ class EchoBot(sleekxmpp.ClientXMPP):
         print('Conectado')
         self.send_presence()
         self.get_roster()
-        
+
+      
 
     #Procesa los mensajes entrantes 
     def message(self, msg):
@@ -120,7 +121,7 @@ if __name__ == '__main__':
             if(menu_opcion == '1'):
                 print("\nContacts:")
                 y = xmpp.client_roster
-                print(y.keys()) 
+                print(y.keys())
                 print("")
 
             ##Mensaje a un usuario 
@@ -152,7 +153,8 @@ if __name__ == '__main__':
             elif(menu_opcion == '6'):
                 x = input("Ingrese el contacto que desea buscar:")
                 y = xmpp.client_roster
-                print(type(y[key_values]))
+                print("Detalles de contacto de: "+x+"\n")
+                print(y[x])
                 
 
             ##Definir nuestro mensaje de preferencia
@@ -168,7 +170,7 @@ if __name__ == '__main__':
                 yes = input("Esta seguro de que quiere eliminar su cuenta? (si/no)")
 
                 if(yes == 'si'):
-                    xmpp.update_roster('michisss@alumchat.xyz', subscription='remove')
+                    print("removing")
 
                 else:
                     menu()
