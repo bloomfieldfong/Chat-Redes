@@ -35,14 +35,31 @@ class EchoBot(sleekxmpp.ClientXMPP):
     #Procesa los mensajes entrantes 
     def message(self, msg):
         if msg['type'] in ('chat', 'normal'):
-            print('---------------------------------------------------------------------------')
+            print('------------------------------------------------------------------------------------------')
             print('From:' )
             print(msg['from'])
-            print('---------------------------------------------------------------------------')
+            print('------------------------------------------------------------------------------------------')
             print(msg['subject'])
             print(msg['body'])
-            print('---------------------------------------------------------------------------')
-            
+            print('------------------------------------------------------------------------------------------')
+
+    def delete_account(self):
+        resp = self.Iq()
+        resp['type'] = 'set'
+        resp['from'] = self.boundjid.user
+        resp['register'] = ' '
+        resp['register']['remove'] = ' '
+        print(resp)
+        try:
+            resp.send(now=True)
+            logging.info("Account deleted for %s!" % self.boundjid)
+        except IqError as e:
+            logging.error("Could not register account: %s" %
+                          e.iq['error']['text'])
+            self.disconnect()
+        except IqTimeout:
+            logging.error("No response from server.")
+            self.disconnect()
 
     def register(self, iq):
         resp = self.Iq()
@@ -171,6 +188,7 @@ if __name__ == '__main__':
 
                 if(yes == 'si'):
                     print("removing")
+                    xmpp.delete_account()
 
                 else:
                     menu()
