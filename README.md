@@ -21,6 +21,12 @@ Implementation of a chat with XMPP protocol. This proyect is made in python 3 wi
 Download [python 3.7.4](https://www.python.org/downloads/) and install.
 
 
+## How to install github
+
+
+Download [github](https://desktop.github.com/) and install.
+
+
 ## Setup intructions
 
 ```
