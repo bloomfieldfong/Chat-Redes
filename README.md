@@ -15,13 +15,13 @@ Implementation of a chat with XMPP protocol. This proyect is made in python 3 wi
 11. Receive files
 
 
-## How to install python 3
+## Install python 3
 
 
 Download [python 3.7.4](https://www.python.org/downloads/) and install.
 
 
-## How to install github
+## Install github
 
 
 Download [github](https://desktop.github.com/) and install.
