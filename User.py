@@ -227,6 +227,7 @@ if __name__ == '__main__':
             elif(menu_opcion == '0'):   
                 print("")
 
+            ##envioo de archivos 
             elif(menu_opcion =='9'):
                 persona = input("Ingrese el usuario a quien le quiere enviar el archivo: ")
                 file = input("Ingrese el nombre del file: ")
